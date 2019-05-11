@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using HTTP;
 using Protocol;
 
@@ -26,6 +27,8 @@ public class EntryRoomButton : MonoBehaviour {
 
     public void onResponseEntryRoom(ResponseCreatePlayerEntry param)
     {
-        Debug.Log("onResponseEntryRoom");
+        DataPool.Instance.player_entry_id = param.player_entry_id;
+        DataPool.Instance.roomid = param.room_id;
+        SceneManager.LoadScene("Game");
     }
 }

@@ -20,6 +20,12 @@ public class ExitButton : MonoBehaviour {
 
     public void onClickExitButton()
     {
+        DeleteUserSessionRequest();
+        SceneManager.LoadScene("Title");
+    }
+
+    private void DeleteUserSessionRequest()
+    {
         ApiClient.Instance.ResponseDeleteUserSession = (p) => { }; // 何もしないコールバックを登録
         var param = new RequestDeleteUserSession();
         param.user_session_id = DataPool.Instance.sessionid;
@@ -30,6 +36,11 @@ public class ExitButton : MonoBehaviour {
         m_roomProcessor.Stop();
 
         DataPool.Instance.Reset();
-        SceneManager.LoadScene("Title");
+    }
+
+    private void OnApplicationQuit()
+    {
+        Debug.Log("OnApplicationQuit");
+        DeleteUserSessionRequest();
     }
 }

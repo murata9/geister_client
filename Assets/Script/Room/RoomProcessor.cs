@@ -24,8 +24,8 @@ public class RoomProcessor : MonoBehaviour {
         {
             Debug.LogError("m_roomParentObj is null");
         }
-        StartCoroutine(Process());
         ApiClient.Instance.ResponseListRooms = onResponseRoomList;
+        StartCoroutine(Process());
     }
 
     public void Stop()
