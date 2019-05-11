@@ -52,6 +52,7 @@ public class RoomProcessor : MonoBehaviour {
             Debug.Log("    " + room.owner_name);
             var r = GameObject.Instantiate(m_roomPrefab) as RectTransform;
             r.SetParent(m_roomParentObj.transform);
+            r.localScale = Vector3.one;
             r.GetComponent<Room>().setParam(room);
         }
     }
