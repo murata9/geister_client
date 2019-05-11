@@ -5,6 +5,13 @@ using UnityEngine;
 public class Board : MonoBehaviour {
     public Piece m_selectedPiece;
 
+    public List<Piece> Pieces { get; private set; }
+
+    void Start()
+    {
+        Pieces = new List<Piece>( GetComponentsInChildren<Piece>() );
+    }
+
     void Update()
     {
         if (m_selectedPiece)

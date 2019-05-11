@@ -29,7 +29,7 @@ public class Login : MonoBehaviour {
     {
         Debug.Log("onResponseLogin");
         DataPool.Instance.userid = param.user_id;
-        DataPool.Instance.userid = param.user_session_id;
+        DataPool.Instance.sessionid = param.user_session_id;
         ApiClient.Instance.SetAccessToken(param.access_token);
 
         // ルームへ
