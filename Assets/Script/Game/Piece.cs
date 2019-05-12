@@ -65,7 +65,7 @@ public class Piece : MonoBehaviour {
         SetSprite();
     }
 
-    void SetPos(PiecePos pos)
+    public void SetPos(PiecePos pos)
     {
         m_pos = pos;
         gameObject.transform.localPosition = PiecePositionConverer.convertToObjPosition(m_pos);
@@ -120,18 +120,26 @@ public class Piece : MonoBehaviour {
     {
         Debug.Log("onClickPiece");
         if (!m_isOwner) return;
-        if (board.m_selectedPiece == null)
+        if (m_isCaputured) return;
+        if (board.gameProcessor.m_state == GameProcessor.e_State.preparing)
         {
-            board.SetSelectedPiece(this);
-            return;
-        }
-        else
-        {
-            PiecePos tmpPos = m_pos;
-            this.SetPos( board.m_selectedPiece.m_pos );
-            board.m_selectedPiece.SetPos(tmpPos);
+            if (board.m_selectedPiece == null)
+            {
+                board.SetSelectedPiece(this);
+                return;
+            }
+            else
+            {
+                PiecePos tmpPos = m_pos;
+                this.SetPos(board.m_selectedPiece.m_pos);
+                board.m_selectedPiece.SetPos(tmpPos);
 
-            board.ReleaseSelectedPiece();
+                board.ReleaseSelectedPiece();
+            }
+        }
+        if (board.gameProcessor.m_state == GameProcessor.e_State.playing)
+        {
+            board.CreateMovablePosition(this);
         }
     }
 }

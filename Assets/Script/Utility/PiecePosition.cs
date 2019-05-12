@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PiecePos
 {
-   public int x;
-   public int y;
+    public int x;
+    public int y;
 
     public PiecePos(int x_, int y_)
     {

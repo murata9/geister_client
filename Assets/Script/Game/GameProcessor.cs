@@ -13,9 +13,9 @@ public class GameProcessor : MonoBehaviour {
     Board board;
 
     private bool m_stopFlag;
-    private e_State m_state;
+    public e_State m_state { get; private set; }
 
-    enum e_State
+    public enum e_State
     {
         room_waiting, // 対戦相手待ち
         preparing, // 初期配置中

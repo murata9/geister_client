@@ -1,10 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 using Protocol;
 
 public class Board : MonoBehaviour {
+    [SerializeField]
+    GameObject movablePositionPrefab;
+
+    public GameProcessor gameProcessor;
+
     public Piece m_selectedPiece;
 
     public List<Piece> Pieces { get; private set; }
@@ -14,13 +21,17 @@ public class Board : MonoBehaviour {
     void Start()
     {
         Pieces = new List<Piece>( GetComponentsInChildren<Piece>() );
+        if (gameProcessor == null) Debug.LogError("gameProcessor is null");
     }
 
     void Update()
     {
-        if (m_selectedPiece)
+        if (gameProcessor.m_state == GameProcessor.e_State.preparing)
         {
-            m_selectedPiece.gameObject.transform.position = Input.mousePosition;
+            if (m_selectedPiece)
+            {
+                m_selectedPiece.gameObject.transform.position = Input.mousePosition;
+            }
         }
     }
 
@@ -61,6 +72,56 @@ public class Board : MonoBehaviour {
                 q.z = 180;
                 gameObject.transform.localRotation = q;
             }
+        }
+    }
+
+    public void CreateMovablePositionInternal(Piece piece, PiecePos pos)
+    {
+        // 移動可能かチェック
+        int goalY = DataPool.Instance.isFirstMover() ? 6 : 0;
+        bool isGoal = (pos.y == goalY && piece.m_kind == Piece.e_kind.good && (pos.x == 0 || pos.x == 7));
+        if (!isGoal)
+        {
+            if (pos.x < 1 || pos.x > 6) return;
+            if (pos.y < 1 || pos.y > 6) return;
+        }
+        if (Pieces.Any((p) => { return (p.m_isOwner) && (p.m_pos.x == pos.x) && (p.m_pos.y == pos.y); }))
+        {
+            // 自駒がある
+            return;
+        }
+
+        var obj = GameObject.Instantiate(movablePositionPrefab); // as RectTransform;
+        var r = obj.transform;
+        r.SetParent(this.gameObject.transform);
+        r.localScale = Vector3.one;
+        r.transform.localPosition = PiecePositionConverer.convertToObjPosition(pos);
+        obj.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            piece.SetPos(pos);
+            DeleteAllMovablePosition();
+        });
+    }
+
+    public void CreateMovablePosition(Piece piece)
+    {
+        DeleteAllMovablePosition();
+        // 4方向に対して移動可能かチェック
+        int x = piece.m_pos.x;
+        int y = piece.m_pos.y;
+        CreateMovablePositionInternal(piece, new PiecePos(x, y - 1));
+        CreateMovablePositionInternal(piece, new PiecePos(x, y + 1));
+        CreateMovablePositionInternal(piece, new PiecePos(x - 1, y));
+        CreateMovablePositionInternal(piece, new PiecePos(x + 1, y));
+        m_selectedPiece = piece;
+    }
+
+    public void DeleteAllMovablePosition()
+    {
+        var objs = GameObject.FindGameObjectsWithTag("MovablePosition");
+        foreach (var obj in objs)
+        {
+            Destroy(obj.gameObject);
         }
     }
 }
