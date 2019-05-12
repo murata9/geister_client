@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
+using HTTP;
 using Protocol;
 
 public class Board : MonoBehaviour {
@@ -22,6 +23,7 @@ public class Board : MonoBehaviour {
     {
         Pieces = new List<Piece>( GetComponentsInChildren<Piece>() );
         if (gameProcessor == null) Debug.LogError("gameProcessor is null");
+        ApiClient.Instance.ResponseUpdatePiece = (p) => { gameProcessor.onPieceMoved(); };
     }
 
     void Update()
@@ -72,7 +74,28 @@ public class Board : MonoBehaviour {
                 q.z = 180;
                 gameObject.transform.localRotation = q;
             }
+            return;
         }
+        // 二回目以降は更新
+        foreach (var p in param.pieces)
+        {
+            var piece = Pieces.SingleOrDefault((x) => { return x.m_id == p.piece_id; });
+            if (piece == null)
+            {
+                Debug.LogError("PieceID:" + p.piece_id + "が見つかりません");
+                return;
+            }
+            piece.SetPieceInfo(p);
+        }
+    }
+
+    void RequestMovePiece(Piece piece, PiecePos pos)
+    {
+        var param = new RequestUpdatePiece();
+        param.piece_id = piece.m_id;
+        param.point_x = pos.x;
+        param.point_y = pos.y;
+        ApiClient.Instance.RequestUpdatePiece(param);
     }
 
     public void CreateMovablePositionInternal(Piece piece, PiecePos pos)
@@ -98,8 +121,10 @@ public class Board : MonoBehaviour {
         r.transform.localPosition = PiecePositionConverer.convertToObjPosition(pos);
         obj.GetComponent<Button>().onClick.AddListener(() =>
         {
-            piece.SetPos(pos);
+            // note:リクエストと同時に駒を動かしたことにするなら、ここでSetPosを実行する
+            // piece.SetPos(pos);
             DeleteAllMovablePosition();
+            RequestMovePiece(piece, pos);
         });
     }
 

@@ -137,7 +137,7 @@ public class Piece : MonoBehaviour {
                 board.ReleaseSelectedPiece();
             }
         }
-        if (board.gameProcessor.m_state == GameProcessor.e_State.playing)
+        if (board.gameProcessor.m_state == GameProcessor.e_State.playing && DataPool.Instance.isMyTurn())
         {
             board.CreateMovablePosition(this);
         }

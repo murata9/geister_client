@@ -86,7 +86,6 @@ public class GameProcessor : MonoBehaviour {
             case "playing":
                 if (m_state == e_State.prepare_waiting)
                 {
-                    Debug.Log("go playing");
                     m_state = e_State.playing;
                 }
                 if (param.turn_count != DataPool.Instance.last_turn_count)
@@ -124,6 +123,11 @@ public class GameProcessor : MonoBehaviour {
             Debug.LogError("logic error invalid status:" + m_state.ToString());
         }
         m_state = e_State.prepare_waiting;
+    }
+
+    public void onPieceMoved()
+    {
+        RequestShowGame();
     }
 
     IEnumerator Process()
