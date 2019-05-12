@@ -1071,6 +1071,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 1828887510}
+  gameProcessor: {fileID: 1587191073}
 --- !u!114 &566175459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2650,6 +2651,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prepareButton: {fileID: 566175458}
+  board: {fileID: 1828887510}
 --- !u!1001 &1819172213
 Prefab:
   m_ObjectHideFlags: 0
@@ -2897,6 +2899,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_selectedPiece: {fileID: 0}
+  m_firstRecvPieceList: 1
 --- !u!1001 &1845190634
 Prefab:
   m_ObjectHideFlags: 0

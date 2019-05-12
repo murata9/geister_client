@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using Protocol;
+
 public class Piece : MonoBehaviour {
     [SerializeField]
     Sprite goodSprite;
@@ -23,6 +25,9 @@ public class Piece : MonoBehaviour {
     public bool m_isOwner;
     public e_kind m_kind;
     public PiecePos m_pos;
+
+    public int m_id;
+    public bool m_isCaputured = false;
 
     void Start()
     {
@@ -54,6 +59,12 @@ public class Piece : MonoBehaviour {
         }
     }
 
+    void SetKind(e_kind kind)
+    {
+        m_kind = kind;
+        SetSprite();
+    }
+
     void SetPos(PiecePos pos)
     {
         m_pos = pos;
@@ -63,6 +74,46 @@ public class Piece : MonoBehaviour {
     public void SetCollisionEnable(bool flag)
     {
         GetComponent<Image>().raycastTarget = flag;
+    }
+
+    public void SetIsOwner(bool isOwner)
+    {
+        if (m_isOwner == isOwner) return;
+        m_isOwner = isOwner;
+        // 反転する
+        Quaternion q = gameObject.transform.localRotation;
+        bool reverse = isOwner;
+        if (DataPool.Instance.isFirstMover())
+        {
+            reverse = !reverse;
+        }
+        if (reverse)
+        {
+            q.z = 0;
+        }
+        else
+        {
+            q.z = 180;
+        }
+        gameObject.transform.localRotation = q;
+    }
+
+    public void SetPieceInfo(PieceInfo info)
+    {
+        if (m_id == 0)
+        {
+            m_id = info.piece_id;
+        }
+        else if (m_id != info.piece_id)
+        {
+            Debug.LogError("異なるIDのPieceInfoで情報を設定しようとした");
+            return;
+        }
+        SetIsOwner(info.owner_user_id == DataPool.Instance.userid);
+        m_isCaputured = info.captured; // TODO:取られた場合の処理
+        SetPos(new PiecePos(info.point_x, info.point_y));
+        var kind = (e_kind)System.Enum.Parse(typeof(e_kind), info.kind);
+        SetKind(kind);
     }
 
     public void onClickPiece()

@@ -9,9 +9,13 @@ public class PrepareButton : MonoBehaviour {
     [SerializeField]
     Board board;
 
+    [SerializeField]
+    GameProcessor gameProcessor;
+
     void Start()
     {
         if (board == null) Debug.LogError("board is null");
+        if (gameProcessor == null) Debug.LogError("gameProcessor is null");
     }
 
     PiecePos reversePos(PiecePos original)
@@ -37,6 +41,7 @@ public class PrepareButton : MonoBehaviour {
         ApiClient.Instance.ResponsePrepareGame = (p) => {
             // TODO:本来はここでは遅い。リクエストした時点でボタンを無効にすべきだが、不正リクエストがテストできるようにしておく
             gameObject.SetActive(false);
+            gameProcessor.onEndPreparing();
         };
 
         var myPieces = board.Pieces.Where(x => x.m_isOwner).Select(toPieceInfo).ToList();
